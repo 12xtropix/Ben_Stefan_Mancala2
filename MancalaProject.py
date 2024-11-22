@@ -15,6 +15,12 @@ class Mancala:
         self.welcome_label = tk.Label(self.root, text="Welcome to Mancala", font=('Arial', 24))
         self.welcome_label.pack(pady=10)
 
+        self.goal1_label = tk.Label(self.root, text="Goal 1", font=('Arial', 18))
+        self.goal1_label.pack(side="left", padx=10, pady=10)
+
+        self.goal2_label = tk.Label(self.root, text="Goal 2", font=('Arial', 18))
+        self.goal2_label.pack(side="right", padx=10, pady=10)
+
         self.player_label = tk.Label(self.root, text=f"Player {self.current_player}'s Turn", font=('Arial', 18))
         self.player_label.pack(pady=5)
 
@@ -67,7 +73,7 @@ class Mancala:
                 stones_to_distribute -= 1
 
             # Check if the last stone landed in an empty pocket owned by the current player
-            if self.stones[current_index] == 1:  # Last stone landed in an empty pocket
+            if self.stones[current_index] == 1 and self.stones[12-current_index] > 0:  # Last stone landed in an empty pocket and the pocket across has stones in it
                 if self.current_player == 1 and 0 <= current_index <= 5:
                     opposite_index = 12 - current_index
                     self.stones[6] += self.stones[opposite_index] + 1
@@ -86,6 +92,7 @@ class Mancala:
             self.check_game_end()
 
             # Switch player after turn if the game is not over
+            #if stones_to_distribute == 0 and current_index == 13 or 7:
             if self.stones[6] != sum(self.stones[:6]) and self.stones[13] != sum(self.stones[7:13]):
                 self.current_player = 2 if self.current_player == 1 else 1
                 self.player_label.config(text=f"Player {self.current_player}'s Turn")
@@ -99,7 +106,7 @@ class Mancala:
                 self.stones[i] = 0
             for i in range(7, 13):
                 self.stones[i] = 0
-
+            self.update_board()
             # Determine the winner
             if self.stones[6] > self.stones[13]:
                 winner = "Player 1"
@@ -126,5 +133,5 @@ def main():
     root.mainloop()
 
 
-if __name__ == "__main__":
+if True:
     main()
