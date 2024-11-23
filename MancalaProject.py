@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 
+
 class Mancala:
     def __init__(self, root):
         self.root = root
@@ -92,8 +93,8 @@ class Mancala:
             self.check_game_end()
 
             # Switch player after turn if the game is not over
-            #if stones_to_distribute == 0 and current_index == 13 or 7:
-            if self.stones[6] != sum(self.stones[:6]) and self.stones[13] != sum(self.stones[7:13]):
+            if stones_to_distribute == 0 and (current_index != 13 and current_index != 6):
+                print("now")
                 self.current_player = 2 if self.current_player == 1 else 1
                 self.player_label.config(text=f"Player {self.current_player}'s Turn")
 
