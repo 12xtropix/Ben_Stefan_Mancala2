@@ -25,6 +25,10 @@ class Mancala:
         self.player_label = tk.Label(self.root, text=f"Player {self.current_player}'s Turn", font=('Arial', 18))
         self.player_label.pack(pady=5)
 
+        self.Rules = tk.Button(self.root, text=f"Rules", font=('Arial', 12), width=5, height=1, command = self.rules_button_click())
+        self.Rules.pack(pady = 5)
+
+
     def create_grid(self):
         self.frame = tk.Frame(self.root, bg="#A1662F")
         self.frame.pack(pady=20)
@@ -94,9 +98,11 @@ class Mancala:
 
             # Switch player after turn if the game is not over
             if stones_to_distribute == 0 and (current_index != 13 and current_index != 6):
-                print("now")
                 self.current_player = 2 if self.current_player == 1 else 1
                 self.player_label.config(text=f"Player {self.current_player}'s Turn")
+
+    def rules_button_click(self):
+        messagebox.
 
     def check_game_end(self):
         if sum(self.stones[:6]) == 0 or sum(self.stones[7:13]) == 0:
