@@ -25,7 +25,8 @@ class Mancala:
         self.player_label = tk.Label(self.root, text=f"Player {self.current_player}'s Turn", font=('Arial', 18))
         self.player_label.pack(pady=5)
 
-        self.Rules = tk.Button(self.root, text=f"Rules", font=('Arial', 12), width=5, height=1, command = self.rules_button_click())
+        self.Rules = tk.Button(self.root, text="Rules", font=('Arial', 12), width=5, height=1,
+                               command=self.rules_button_click)
         self.Rules.pack(pady = 5)
 
 
@@ -102,7 +103,15 @@ class Mancala:
                 self.player_label.config(text=f"Player {self.current_player}'s Turn")
 
     def rules_button_click(self):
-        messagebox.
+
+        Rules.text = """
+        These are the rules of Mancala:
+
+        1. Each player takes turns picking up all the stones from one of their pockets.
+        2. The player distributes the stones one by one in each pocket, skipping the opponent's goal.
+        3. If the last stone lands in an empty pocket on the player's side, and the opposite pocket has stones, the player captures the stones from the opposite pocket.
+        4. The game ends when one player has no stones left in their pockets. The other player captures the remaining stones.
+        """
 
     def check_game_end(self):
         if sum(self.stones[:6]) == 0 or sum(self.stones[7:13]) == 0:
