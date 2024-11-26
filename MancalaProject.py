@@ -17,7 +17,7 @@ class Mancala:
         self.welcome_label.pack(pady=10)
 
         self.goal1_label = tk.Label(self.root, text="Goal 1", font=('Arial', 18))
-        self.goal1_label.pack(side="left", padx=10, pady=10)
+        self.goal1_label.pack(side="left", padx=10)
 
         self.goal2_label = tk.Label(self.root, text="Goal 2", font=('Arial', 18))
         self.goal2_label.pack(side="right", padx=10, pady=10)
@@ -28,6 +28,9 @@ class Mancala:
         self.Rules = tk.Button(self.root, text="Rules", font=('Arial', 12), width=5, height=1,
                                command=self.rules_button_click)
         self.Rules.pack(pady = 5)
+
+        self.Reset = tk.Button(self.root, text ="Reset", font=('Comic Sans', 12), width = 5, height = 1, command=self.reset_button_click)
+        self.Reset.pack(pady=5)
 
 
     def create_grid(self):
@@ -104,14 +107,23 @@ class Mancala:
 
     def rules_button_click(self):
 
-        Rules.text = """
+        tk.messagebox.showinfo("Rules:",
+
+        """
         These are the rules of Mancala:
 
-        1. Each player takes turns picking up all the stones from one of their pockets.
-        2. The player distributes the stones one by one in each pocket, skipping the opponent's goal.
+        1. Each player takes turns picking up all the stones from one of their side's pockets by clicking on it.
+        2. The player distributes the stones one by one in each pocket counterclockwise, skipping the opponent's goal.
         3. If the last stone lands in an empty pocket on the player's side, and the opposite pocket has stones, the player captures the stones from the opposite pocket.
-        4. The game ends when one player has no stones left in their pockets. The other player captures the remaining stones.
-        """
+        4. If the last stone lands in the player's goal, the player gets to play another turn
+        5. The game ends when one player has no stones left in any of their pockets. The other player captures the remaining stones.
+        """)
+
+    def reset_button_click(self):
+        self.current_player = 1
+        self.player_label.config(text = f"Player {self.current_player}'s Turn")
+        self.stones = [4] * 6 + [0] + [4] * 6 + [0]
+        self.update_board()
 
     def check_game_end(self):
         if sum(self.stones[:6]) == 0 or sum(self.stones[7:13]) == 0:
@@ -142,12 +154,10 @@ class Mancala:
         self.goal_left.config(text=str(self.stones[6]))
         self.goal_right.config(text=str(self.stones[13]))
 
-
 def main():
     root = tk.Tk()
     Mancala(root)
     root.mainloop()
-
 
 if True:
     main()
