@@ -8,8 +8,11 @@ class Mancala:
         self.root.title("Mancala")
         self.stones = [4] * 6 + [0] + [4] * 6 + [0]  # Initial stone counts, index 6 and 13 are goals
         self.current_player = 1  # 1 for Player 1 (top row), 2 for Player 2 (bottom row)
+        self.p1score = 0
+        self.p2score = 0
         self.create_widgets()
         self.create_grid()
+        self.create_scoreboard()
 
     def create_widgets(self):
         # Welcome and player indicator labels
@@ -60,6 +63,12 @@ class Mancala:
             button.grid(row=1, column=col + 1, padx=5, pady=5)
             button.config(command=lambda r=1, c=col + 7: self.on_button_click(r, c))
             self.buttons[1][col] = button
+
+    def create_scoreboard(self):
+        p1score = 0
+        p2score = 0
+        self.scoreboard = tk.Label(self.root, text=f"Player 1:{p1score}\nPlayer 2:{p2score}", font=('Arial', 18))
+        self.scoreboard.pack(pady = 10)
 
     def on_button_click(self, row, col):
         if (self.current_player == 1 and row == 0 and self.stones[col] > 0) or \
@@ -138,13 +147,17 @@ class Mancala:
             # Determine the winner
             if self.stones[6] > self.stones[13]:
                 winner = "Player 1"
+                self.p1score += 1
             elif self.stones[6] < self.stones[13]:
                 winner = "Player 2"
+                self.p2score += 1
             else:
-                winner = "It's a tie!"
+                winner = "It's a tie! Nobody"
 
             # Show winner popup
             messagebox.showinfo("Game Over", f"Game over! {winner} wins!")
+
+            self.scoreboard.config(text=f"Player 1: {self.p1score}\nPlayer 2: {self.p2score}")
 
     def update_board(self):
         # Update button text to reflect the stones array
