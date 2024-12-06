@@ -63,6 +63,9 @@ class Mancala:
             button.grid(row=1, column=col + 1, padx=5, pady=5)
             button.config(command=lambda r=1, c=col + 7: self.on_button_click(r, c))
             self.buttons[1][col] = button
+        for col in range(6):
+            self.buttons[0][5 - col].config(state="normal")
+            self.buttons[1][col].config(state="disabled")
 
     def create_scoreboard(self):
         p1score = 0
@@ -114,6 +117,8 @@ class Mancala:
                 self.current_player = 2 if self.current_player == 1 else 1
                 self.player_label.config(text=f"Player {self.current_player}'s Turn")
 
+            self.update_board()
+
     def rules_button_click(self):
 
         tk.messagebox.showinfo("Rules:",
@@ -162,10 +167,26 @@ class Mancala:
     def update_board(self):
         # Update button text to reflect the stones array
         for col in range(6):
+            # Update the text for Player 1 (top row)
             self.buttons[0][5 - col].config(text=str(self.stones[5 - col]))
+            # Update the text for Player 2 (bottom row)
             self.buttons[1][col].config(text=str(self.stones[col + 7]))
+
+        # Enable or disable buttons based on the current player
+        for col in range(6):
+            if self.current_player == 1:
+                # Player 1's turn: Enable Player 1's pockets (top row), disable Player 2's (bottom row)
+                self.buttons[0][5 - col].config(state="normal")
+                self.buttons[1][col].config(state="disabled")
+            elif self.current_player == 2:
+                # Player 2's turn: Enable Player 2's pockets (bottom row), disable Player 1's (top row)
+                self.buttons[0][5 - col].config(state="disabled")
+                self.buttons[1][col].config(state="normal")
+
+        # Update the goals for both players
         self.goal_left.config(text=str(self.stones[6]))
         self.goal_right.config(text=str(self.stones[13]))
+
 
 def main():
     root = tk.Tk()
