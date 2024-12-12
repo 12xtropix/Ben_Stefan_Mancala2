@@ -13,32 +13,33 @@ class Mancala:
         self.create_widgets()
         self.create_grid()
         self.create_scoreboard()
+        self.anchor="center"
 
     def create_widgets(self):
         # Welcome and player indicator labels
         self.welcome_label = tk.Label(self.root, text="Welcome to Mancala", font=('Arial', 24))
-        self.welcome_label.pack(pady=10)
+        self.welcome_label.pack(pady=10, anchor="center")
 
         self.goal1_label = tk.Label(self.root, text="Goal 1", font=('Arial', 18))
-        self.goal1_label.pack(side="left", padx=10)
+        self.goal1_label.pack(side="left", padx=10, pady=10, anchor="center")
 
         self.goal2_label = tk.Label(self.root, text="Goal 2", font=('Arial', 18))
-        self.goal2_label.pack(side="right", padx=10, pady=10)
+        self.goal2_label.pack(side="right", padx=10, pady=10, anchor="center")
 
         self.player_label = tk.Label(self.root, text=f"Player {self.current_player}'s Turn", font=('Arial', 18))
-        self.player_label.pack(pady=5)
+        self.player_label.pack(pady=5, anchor="center")
 
         self.Rules = tk.Button(self.root, text="Rules", font=('Arial', 12), width=5, height=1,
                                command=self.rules_button_click)
-        self.Rules.pack(pady = 5)
+        self.Rules.pack(pady=5, anchor="center")
 
-        self.Reset = tk.Button(self.root, text ="Reset", font=('Comic Sans', 12), width = 5, height = 1, command=self.reset_button_click)
-        self.Reset.pack(pady=5)
-
+        self.Reset = tk.Button(self.root, text="Reset", font=('Comic Sans', 12), width=5, height=1,
+                               command=self.reset_button_click)
+        self.Reset.pack(pady=5, anchor="center")
 
     def create_grid(self):
         self.frame = tk.Frame(self.root, bg="#A1662F")
-        self.frame.pack(pady=20)
+        self.frame.pack(pady=20, anchor="center")
 
         self.buttons = [[None for _ in range(8)] for _ in range(2)]
 
@@ -70,8 +71,9 @@ class Mancala:
     def create_scoreboard(self):
         p1score = 0
         p2score = 0
-        self.scoreboard = tk.Label(self.root, text=f"Player 1:{p1score}\nPlayer 2:{p2score}", font=('Arial', 18))
-        self.scoreboard.pack(pady = 10)
+        self.scoreboard = tk.Label(self.root, text=f"Player 1: {self.p1score}\nPlayer 2: {self.p2score}",
+                                   font=('Arial', 18))
+        self.scoreboard.pack(pady=10, anchor="center")
 
     def on_button_click(self, row, col):
         if (self.current_player == 1 and row == 0 and self.stones[col] > 0) or \
@@ -190,8 +192,25 @@ class Mancala:
 
 def main():
     root = tk.Tk()
+
+    # Get the width and height of the screen
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    # Get the width and height of the window
+    window_width = 1200  # You can adjust this
+    window_height = 600  # You can adjust this
+
+    # Calculate the position to center the window on the screen
+    position_top = int(screen_height / 2 - window_height / 2)
+    position_left = int(screen_width / 2 - window_width / 2)
+
+    # Set the window size and position
+    root.geometry(f"{window_width}x{window_height}+{position_left}+{position_top}")
+
     Mancala(root)
     root.mainloop()
+
 
 if True:
     main()
