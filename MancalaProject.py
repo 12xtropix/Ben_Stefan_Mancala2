@@ -1,3 +1,4 @@
+import pygame
 import tkinter as tk
 from tkinter import messagebox
 
@@ -6,14 +7,30 @@ class Mancala:
     def __init__(self, root):
         self.root = root
         self.root.title("Mancala")
-        self.stones = [4] * 6 + [0] + [4] * 6 + [0]  # Initial stone counts, index 6 and 13 are goals
-        self.current_player = 1  # 1 for Player 1 (top row), 2 for Player 2 (bottom row)
+
+        # Initialize pygame mixer
+        pygame.mixer.init()
+
+        # Load background music
+        pygame.mixer.music.load("background_music.mp3")
+        pygame.mixer.music.set_volume(0.5)  # Set the volume
+        pygame.mixer.music.play(-1, 0.0)  # Play music in a loop
+
+        # Load sound effects
+        self.move_sound = pygame.mixer.Sound("move_sound.wav")
+        self.capture_sound = pygame.mixer.Sound("capture_sound.wav")
+        self.game_over_sound = pygame.mixer.Sound("game_over_sound.wav")
+
+        # Initialize game variables
+        self.stones = [4] * 6 + [0] + [4] * 6 + [0]
+        self.current_player = 1
         self.p1score = 0
         self.p2score = 0
+
+        # Initialize UI components
         self.create_widgets()
         self.create_grid()
         self.create_scoreboard()
-        self.anchor="center"
 
     def create_widgets(self):
         # Welcome and player indicator labels
@@ -69,15 +86,17 @@ class Mancala:
             self.buttons[1][col].config(state="disabled")
 
     def create_scoreboard(self):
-        p1score = 0
-        p2score = 0
         self.scoreboard = tk.Label(self.root, text=f"Player 1: {self.p1score}\nPlayer 2: {self.p2score}",
                                    font=('Arial', 18))
         self.scoreboard.pack(pady=10, anchor="center")
 
     def on_button_click(self, row, col):
         if (self.current_player == 1 and row == 0 and self.stones[col] > 0) or \
-           (self.current_player == 2 and row == 1 and self.stones[col] > 0):
+                (self.current_player == 2 and row == 1 and self.stones[col] > 0):
+
+            # Play move sound when player clicks a pocket
+            self.move_sound.play()
+
             stones_to_distribute = self.stones[col]
             self.stones[col] = 0
             current_index = col
@@ -86,7 +105,6 @@ class Mancala:
             while stones_to_distribute > 0:
                 current_index = (current_index + 1) % 14
 
-                # Skip the opponent's goal
                 if self.current_player == 1 and current_index == 13:
                     continue
                 elif self.current_player == 2 and current_index == 6:
@@ -95,8 +113,8 @@ class Mancala:
                 self.stones[current_index] += 1
                 stones_to_distribute -= 1
 
-            # Check if the last stone landed in an empty pocket owned by the current player
-            if self.stones[current_index] == 1 and self.stones[12-current_index] > 0:  # Last stone landed in an empty pocket and the pocket across has stones in it
+            # Check for capture
+            if self.stones[current_index] == 1 and self.stones[12 - current_index] > 0:
                 if self.current_player == 1 and 0 <= current_index <= 5:
                     opposite_index = 12 - current_index
                     self.stones[6] += self.stones[opposite_index] + 1
@@ -107,14 +125,15 @@ class Mancala:
                     self.stones[13] += self.stones[opposite_index] + 1
                     self.stones[current_index] = 0
                     self.stones[opposite_index] = 0
+                # Play capture sound
+                self.capture_sound.play()
 
-            # Update the board
             self.update_board()
 
             # Check for game end
             self.check_game_end()
 
-            # Switch player after turn if the game is not over
+            # Switch player
             if stones_to_distribute == 0 and (current_index != 13 and current_index != 6):
                 self.current_player = 2 if self.current_player == 1 else 1
                 self.player_label.config(text=f"Player {self.current_player}'s Turn")
@@ -122,10 +141,7 @@ class Mancala:
             self.update_board()
 
     def rules_button_click(self):
-
-        tk.messagebox.showinfo("Rules:",
-
-        """
+        tk.messagebox.showinfo("Rules:", """
         These are the rules of Mancala:
 
         1. Each player takes turns picking up all the stones from one of their side's pockets by clicking on it.
@@ -137,7 +153,7 @@ class Mancala:
 
     def reset_button_click(self):
         self.current_player = 1
-        self.player_label.config(text = f"Player {self.current_player}'s Turn")
+        self.player_label.config(text=f"Player {self.current_player}'s Turn")
         self.stones = [4] * 6 + [0] + [4] * 6 + [0]
         self.update_board()
 
@@ -151,6 +167,10 @@ class Mancala:
             for i in range(7, 13):
                 self.stones[i] = 0
             self.update_board()
+
+            # Play game over sound
+            self.game_over_sound.play()
+
             # Determine the winner
             if self.stones[6] > self.stones[13]:
                 winner = "Player 1"
@@ -161,10 +181,12 @@ class Mancala:
             else:
                 winner = "It's a tie! Nobody"
 
-            # Show winner popup
             messagebox.showinfo("Game Over", f"Game over! {winner} wins!")
 
             self.scoreboard.config(text=f"Player 1: {self.p1score}\nPlayer 2: {self.p2score}")
+
+            # Stop the background music when the game ends
+            pygame.mixer.music.stop()
 
     def update_board(self):
         # Update button text to reflect the stones array
@@ -198,19 +220,22 @@ def main():
     screen_height = root.winfo_screenheight()
 
     # Get the width and height of the window
-    window_width = 1200  # You can adjust this
-    window_height = 600  # You can adjust this
+    window_width = 1200  # You can adjust this as needed
+    window_height = 600  # You can adjust this as needed
 
-    # Calculate the position to center the window on the screen
-    position_top = int(screen_height / 2 - window_height / 2)
-    position_left = int(screen_width / 2 - window_width / 2)
+    # Calculate the x and y coordinates for centering the window
+    x = (screen_width // 2) - (window_width // 2)
+    y = (screen_height // 2) - (window_height // 2)
 
-    # Set the window size and position
-    root.geometry(f"{window_width}x{window_height}+{position_left}+{position_top}")
+    # Set the dimensions of the window and its position
+    root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
-    Mancala(root)
+    # Create Mancala game object
+    game = Mancala(root)
+
+    # Run the Tkinter event loop
     root.mainloop()
 
 
-if True:
+if __name__ == "__main__":
     main()
