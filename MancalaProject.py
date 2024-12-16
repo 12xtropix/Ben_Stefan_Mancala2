@@ -12,14 +12,14 @@ class Mancala:
         pygame.mixer.init()
 
         # Load background music
-        pygame.mixer.music.load("background_music.mp3")
+        pygame.mixer.music.load("backgroundjazz.mp3")
         pygame.mixer.music.set_volume(0.5)  # Set the volume
         pygame.mixer.music.play(-1, 0.0)  # Play music in a loop
 
         # Load sound effects
-        self.move_sound = pygame.mixer.Sound("move_sound.wav")
-        self.capture_sound = pygame.mixer.Sound("capture_sound.wav")
-        self.game_over_sound = pygame.mixer.Sound("game_over_sound.wav")
+        self.move_sound = pygame.mixer.Sound("movesound.mp3")
+        self.capture_sound = pygame.mixer.Sound("capturesound.mp3")
+        self.game_over_sound = pygame.mixer.Sound("gameoversound.mp3")
 
         # Initialize game variables
         self.stones = [4] * 6 + [0] + [4] * 6 + [0]
@@ -38,10 +38,10 @@ class Mancala:
         self.welcome_label.pack(pady=10, anchor="center")
 
         self.goal1_label = tk.Label(self.root, text="Goal 1", font=('Arial', 18))
-        self.goal1_label.pack(side="left", padx=10, pady=10, anchor="center")
+        self.goal1_label.pack(side="left", padx=25, pady=10, anchor="center")
 
         self.goal2_label = tk.Label(self.root, text="Goal 2", font=('Arial', 18))
-        self.goal2_label.pack(side="right", padx=10, pady=10, anchor="center")
+        self.goal2_label.pack(side="right", padx=25, pady=10, anchor="center")
 
         self.player_label = tk.Label(self.root, text=f"Player {self.current_player}'s Turn", font=('Arial', 18))
         self.player_label.pack(pady=5, anchor="center")
