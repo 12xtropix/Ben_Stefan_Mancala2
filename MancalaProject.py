@@ -111,7 +111,7 @@ class Mancala:
         self.scoreboard = tk.Label(self.root, text=f"Player 1: {self.p1score}\nPlayer 2: {self.p2score}",
                                    font=('Arial', 18))
         self.scoreboard.pack(pady=10, anchor="center")
-
+#lol
     def on_button_click(self, row, col):
         if (self.current_player == 1 and row == 0 and self.stones[col] > 0) or \
                 (self.current_player == 2 and row == 1 and self.stones[col] > 0):
