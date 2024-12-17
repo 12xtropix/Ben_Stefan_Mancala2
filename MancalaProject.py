@@ -1,7 +1,6 @@
 import pygame
 import tkinter as tk
 from tkinter import messagebox
-from PIL import Image, ImageTk
 
 
 class Mancala:
@@ -28,31 +27,10 @@ class Mancala:
         self.p1score = 0
         self.p2score = 0
 
-        # Initialize sprites
-        self.sprite_sheet = pygame.image.load("10 piece mancala.png")
-
-        # Adjust this to get the correct sprite from a 5x2 grid (each sprite 32x32)
-        self.stone_sprites = [self.get_sprite(i % 2 * 32, i // 2 * 32, 32, 32) for i in range(10)]
-
-        # Initialize Tkinter-compatible images
-        self.tk_stone_sprites = [self.convert_to_tk_image(sprite) for sprite in self.stone_sprites]
-
         # Initialize UI components
         self.create_widgets()
         self.create_grid()
         self.create_scoreboard()
-
-    def get_sprite(self, x, y, width, height):
-        sprite = pygame.Surface((width, height), pygame.SRCALPHA)  # Create a transparent surface
-        sprite.blit(self.sprite_sheet, (0, 0), (x, y, width, height))  # Copy the part of the sprite sheet
-        return sprite
-
-    def convert_to_tk_image(self, pygame_surface):
-        """Convert Pygame Surface to Tkinter PhotoImage."""
-        image_data = pygame.image.tostring(pygame_surface, 'RGBA')
-        pil_image = Image.frombytes('RGBA', pygame_surface.get_size(), image_data)
-        tk_image = ImageTk.PhotoImage(pil_image)
-        return tk_image
 
     def create_widgets(self):
         # Welcome and player indicator labels
@@ -111,7 +89,7 @@ class Mancala:
         self.scoreboard = tk.Label(self.root, text=f"Player 1: {self.p1score}\nPlayer 2: {self.p2score}",
                                    font=('Arial', 18))
         self.scoreboard.pack(pady=10, anchor="center")
-#lol
+
     def on_button_click(self, row, col):
         if (self.current_player == 1 and row == 0 and self.stones[col] > 0) or \
                 (self.current_player == 2 and row == 1 and self.stones[col] > 0):
@@ -138,17 +116,19 @@ class Mancala:
             # Check for capture
             if self.stones[current_index] == 1 and self.stones[12 - current_index] > 0:
                 if self.current_player == 1 and 0 <= current_index <= 5:
+                    self.capture_sound.play()
                     opposite_index = 12 - current_index
                     self.stones[6] += self.stones[opposite_index] + 1
                     self.stones[current_index] = 0
                     self.stones[opposite_index] = 0
                 elif self.current_player == 2 and 7 <= current_index <= 12:
+                    self.capture_sound.play()
                     opposite_index = 12 - current_index
                     self.stones[13] += self.stones[opposite_index] + 1
                     self.stones[current_index] = 0
                     self.stones[opposite_index] = 0
-                # Play capture sound
-                self.capture_sound.play()
+
+
 
             self.update_board()
 
@@ -162,13 +142,61 @@ class Mancala:
 
             self.update_board()
 
+    def rules_button_click(self):
+        tk.messagebox.showinfo("Rules:", """
+        These are the rules of Mancala:
+
+        1. Each player takes turns picking up all the stones from one of their side's pockets by clicking on it.
+        2. The player distributes the stones one by one in each pocket counterclockwise, skipping the opponent's goal.
+        3. If the last stone lands in an empty pocket on the player's side, and the opposite pocket has stones, the player captures the stones from the opposite pocket.
+        4. If the last stone lands in the player's goal, the player gets to play another turn
+        5. The game ends when one player has no stones left in any of their pockets. The other player captures the remaining stones.
+        """)
+
+    def reset_button_click(self):
+        self.current_player = 1
+        self.player_label.config(text=f"Player {self.current_player}'s Turn")
+        self.stones = [4] * 6 + [0] + [4] * 6 + [0]
+        self.update_board()
+        pygame.mixer.music.play(-1, 0.0)
+
+    def check_game_end(self):
+        if sum(self.stones[:6]) == 0 or sum(self.stones[7:13]) == 0:
+            # Collect remaining stones
+            self.stones[6] += sum(self.stones[:6])
+            self.stones[13] += sum(self.stones[7:13])
+            for i in range(6):
+                self.stones[i] = 0
+            for i in range(7, 13):
+                self.stones[i] = 0
+            self.update_board()
+            pygame.mixer.music.stop()
+            self.game_over_sound.play()
+
+            # Determine the winner
+            if self.stones[6] > self.stones[13]:
+                winner = "Player 1"
+                self.p1score += 1
+            elif self.stones[6] < self.stones[13]:
+                winner = "Player 2"
+                self.p2score += 1
+            else:
+                winner = "It's a tie! Nobody"
+
+            messagebox.showinfo("Game Over", f"Game over! {winner} wins!")
+
+            self.scoreboard.config(text=f"Player 1: {self.p1score}\nPlayer 2: {self.p2score}")
+
+            # Stop the background music when the game ends
+            pygame.mixer.music.stop()
+
     def update_board(self):
-        # Update button text to reflect the stones array (with sprite-based pieces)
+        # Update button text to reflect the stones array
         for col in range(6):
             # Update the text for Player 1 (top row)
-            self.buttons[0][5 - col].config(text=str(self.stones[5 - col]), image=self.tk_stone_sprites[self.stones[5 - col] - 1])
+            self.buttons[0][5 - col].config(text=str(self.stones[5 - col]))
             # Update the text for Player 2 (bottom row)
-            self.buttons[1][col].config(text=str(self.stones[col + 7]), image=self.tk_stone_sprites[self.stones[col + 7] - 1])
+            self.buttons[1][col].config(text=str(self.stones[col + 7]))
 
         # Enable or disable buttons based on the current player
         for col in range(6):
@@ -211,5 +239,5 @@ def main():
     root.mainloop()
 
 
-if True:
+if __name__ == "__main__":
     main()
