@@ -45,13 +45,18 @@ class Mancala:
         self.player_label = tk.Label(self.root, text=f"Player {self.current_player}'s Turn", font=('Arial', 18))
         self.player_label.pack(pady=5, anchor="center")
 
-        self.Rules = tk.Button(self.root, text="Rules", font=('Arial', 12), width=5, height=1,
-                               command=self.rules_button_click)
-        self.Rules.pack(anchor="w")
+        button_frame = tk.Frame(self.root)
+        button_frame.pack(pady=5, anchor = "center")
 
-        self.Reset = tk.Button(self.root, text="Reset", font=('Comic Sans', 12), width=5, height=1,
+        # Create the Rules button
+        self.Rules = tk.Button(button_frame, text="Rules", font=('Arial', 12), width=5, height=1,
+                               command=self.rules_button_click)
+        self.Rules.grid(row=0, column=0, padx=10)  # Place the Rules button at the first column
+
+        # Create the Reset button
+        self.Reset = tk.Button(button_frame, text="Reset", font=('Comic Sans', 12), width=5, height=1,
                                command=self.reset_button_click)
-        self.Reset.pack(pady=5, anchor="e")
+        self.Reset.grid(row=0, column=1, padx=10)  # Place the Reset button at the second column
 
     def create_grid(self):
         self.frame = tk.Frame(self.root, bg="#A1662F")
