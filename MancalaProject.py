@@ -1,7 +1,6 @@
 import pygame
 import tkinter as tk
 from tkinter import messagebox
-#coment
 
 class Mancala:
     def __init__(self, root):
@@ -48,11 +47,11 @@ class Mancala:
 
         self.Rules = tk.Button(self.root, text="Rules", font=('Arial', 12), width=5, height=1,
                                command=self.rules_button_click)
-        self.Rules.pack(pady=5, anchor="center")
+        self.Rules.pack(anchor="w")
 
         self.Reset = tk.Button(self.root, text="Reset", font=('Comic Sans', 12), width=5, height=1,
                                command=self.reset_button_click)
-        self.Reset.pack(pady=5, anchor="center")
+        self.Reset.pack(pady=5, anchor="e")
 
     def create_grid(self):
         self.frame = tk.Frame(self.root, bg="#A1662F")
