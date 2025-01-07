@@ -1,5 +1,6 @@
 import pygame
 import tkinter as tk
+import time
 from tkinter import messagebox
 
 class Mancala:
@@ -26,7 +27,7 @@ class Mancala:
         self.p1score = 0
         self.p2score = 0
 
-        # Initialize UI components
+        # Initialize UI
         self.create_widgets()
         self.create_grid()
         self.create_scoreboard()
@@ -35,16 +36,16 @@ class Mancala:
         # Welcome and player indicator labels
         self.welcome_label = tk.Label(self.root, text="Welcome to Mancala", font=('Arial', 24))
         self.welcome_label.pack(pady=10, anchor="center")
-
+        # Label for goal 1
         self.goal1_label = tk.Label(self.root, text="Goal 1", font=('Arial', 18))
         self.goal1_label.pack(side="left", padx=25, pady=10, anchor="center")
-
+        # Label for goal 2
         self.goal2_label = tk.Label(self.root, text="Goal 2", font=('Arial', 18))
         self.goal2_label.pack(side="right", padx=25, pady=10, anchor="center")
-
+        # Label that says which player should go
         self.player_label = tk.Label(self.root, text=f"Player {self.current_player}'s Turn", font=('Arial', 18))
         self.player_label.pack(pady=5, anchor="center")
-
+        # Frame for the board
         button_frame = tk.Frame(self.root)
         button_frame.pack(pady=5, anchor = "center")
 
@@ -95,12 +96,14 @@ class Mancala:
         self.scoreboard.pack(pady=10, anchor="center")
 
     def on_button_click(self, row, col):
+        # Only if the proper player is clicking - now obsolete due to disabling of buttons
         if (self.current_player == 1 and row == 0 and self.stones[col] > 0) or \
                 (self.current_player == 2 and row == 1 and self.stones[col] > 0):
 
             # Play move sound when player clicks a pocket
             self.move_sound.play()
 
+            # This effectively picks up the seeds from the pit and holds them in a variable
             stones_to_distribute = self.stones[col]
             self.stones[col] = 0
             current_index = col
@@ -132,9 +135,9 @@ class Mancala:
                     self.stones[current_index] = 0
                     self.stones[opposite_index] = 0
 
-
-
             self.update_board()
+            # Supposed to cause an animation, but it is barely noticeable
+            time.sleep(0.3)
 
             # Check for game end
             self.check_game_end()
@@ -145,6 +148,7 @@ class Mancala:
                 self.player_label.config(text=f"Player {self.current_player}'s Turn")
 
             self.update_board()
+
 
     def rules_button_click(self):
         tk.messagebox.showinfo("Rules:", """
@@ -162,11 +166,12 @@ class Mancala:
         self.player_label.config(text=f"Player {self.current_player}'s Turn")
         self.stones = [4] * 6 + [0] + [4] * 6 + [0]
         self.update_board()
+        # Restarts the music
         pygame.mixer.music.play(-1, 0.0)
 
     def check_game_end(self):
         if sum(self.stones[:6]) == 0 or sum(self.stones[7:13]) == 0:
-            # Collect remaining stones
+            # Collects remaining stones
             self.stones[6] += sum(self.stones[:6])
             self.stones[13] += sum(self.stones[7:13])
             for i in range(6):
@@ -177,7 +182,7 @@ class Mancala:
             pygame.mixer.music.stop()
             self.game_over_sound.play()
 
-            # Determine the winner
+            # Determines the winner
             if self.stones[6] > self.stones[13]:
                 winner = "Player 1"
                 self.p1score += 1
@@ -186,6 +191,8 @@ class Mancala:
                 self.p2score += 1
             else:
                 winner = "It's a tie! Nobody"
+                self.p2score += 0.5
+                self.p1score += 0.5
 
             messagebox.showinfo("Game Over", f"Game over! {winner} wins!")
 
@@ -195,14 +202,14 @@ class Mancala:
             pygame.mixer.music.stop()
 
     def update_board(self):
-        # Update button text to reflect the stones array
+        # Updates button text to reflect the stones array
         for col in range(6):
-            # Update the text for Player 1 (top row)
+            # Updates the text for Player 1 (top row)
             self.buttons[0][5 - col].config(text=str(self.stones[5 - col]))
-            # Update the text for Player 2 (bottom row)
+            # Updates the text for Player 2 (bottom row)
             self.buttons[1][col].config(text=str(self.stones[col + 7]))
 
-        # Enable or disable buttons based on the current player
+        # Enables or disables buttons based on the current player
         for col in range(6):
             if self.current_player == 1:
                 # Player 1's turn: Enable Player 1's pockets (top row), disable Player 2's (bottom row)
@@ -213,7 +220,7 @@ class Mancala:
                 self.buttons[0][5 - col].config(state="disabled")
                 self.buttons[1][col].config(state="normal")
 
-        # Update the goals for both players
+        # Updates the goals for both players
         self.goal_left.config(text=str(self.stones[6]))
         self.goal_right.config(text=str(self.stones[13]))
 
@@ -226,8 +233,8 @@ def main():
     screen_height = root.winfo_screenheight()
 
     # Get the width and height of the window
-    window_width = 1200  # You can adjust this as needed
-    window_height = 600  # You can adjust this as needed
+    window_width = 1200
+    window_height = 600
 
     # Calculate the x and y coordinates for centering the window
     x = (screen_width // 2) - (window_width // 2)
@@ -243,5 +250,5 @@ def main():
     root.mainloop()
 
 
-if __name__ == "__main__":
+if True:
     main()
