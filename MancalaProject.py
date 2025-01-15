@@ -136,8 +136,6 @@ class Mancala:
                     self.stones[opposite_index] = 0
 
             self.update_board()
-            # Supposed to cause an animation, but it is barely noticeable
-            time.sleep(0.3)
 
             # Check for game end
             self.check_game_end()
